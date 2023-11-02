@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="static/css/new_page.css">
+    <title>Travel Information Form</title>
+   
+</head>
+<body>
+
+
+    
+
+
+
+    <h1>Travel Information Form</h1>
+    <form action="" method="post">
+        {% csrf_token %}
+        <label for="price">Price:</label>
+        <input type="text" id="price" name="price"><br>
+
+        <label for="days">Number of Days:</label>
+        <input type="text" id="days" name="days"><br>
+
+        <label for="food">Food Preferences:</label>
+        <select id="food" name="food">
+            <option value="0">Non-Vegetarian</option>
+            <option value="1">Vegetarian</option>
+            <option value="2">All Types</option>
+        </select><br>
+
+        <label for="stay">Accommodation Type:</label>
+        <select id="stay" name="stay">
+            <option value="0">Homestay</option>
+            <option value="1">Hotels</option>
+            <option value="2">Resorts</option>
+            <option value="3">Lodge</option>
+            <option value="4">Tents</option>
+            <option value="5">Huts</option>
+        </select><br>
+
+        <label for="climate">Climate Preferences:</label>
+        <select id="climate" name ="climate">
+            <option value="0">Tropic</option>
+            <option value="1">Temperate</option>
+            <option value="2">Desert</option>
+            <option value="3">Mediterranean</option>
+            <option value="4">Alpine</option>
+            <option value="5">Coastal</option>
+        </select><br>
+
+        <label for="family-size">Family Size:</label>
+        <input type="text" id="family-size" name="family-size"><br>
+
+        <label for="transport">Mode of Transport Available:</label>
+        <select id="transport" name="transport">
+            <option value="0">Car</option>
+            <option value="1">Bike</option>
+            <option value="2">Train</option>
+            <option value="3">Boat</option>
+            <option value="4">Bicycle</option>
+            <option value="5">Flight</option>
+        </select><br>
+
+        <label for="activity">Activity:</label>
+        <select id="activity" name="activity">
+            <option value="0">Hike</option>
+            <option value="1">Water Sport</option>
+            <option value="2">Bungee Jump</option>
+            <option value="3">Safari</option>
+            <option value="4">Cycling</option>
+            <option value="5">Boating</option>
+        </select><br>
+
+        <!-- <label for="place">Destination:</label>
+        <input type="text" id="place" name="place"><br> -->
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
