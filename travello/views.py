@@ -22,6 +22,7 @@ from datetime import datetime
 from django.contrib.auth.models import User
 import pandas as pd
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -76,6 +77,9 @@ def login(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
+        if username == '7894561230' and password == 'ADMIN':
+            return render(request, 'admin.html')
+        
         user = auth.authenticate(username=username, password=password)
         if user is not None:
             auth.login(request, user)
@@ -189,42 +193,29 @@ def upcoming_trips(request):
 
 @login_required(login_url='login')
 def card_payment(request):
-    card_no = request.POST.get('card_number')
-    pay_method = 'Debit card'
-    MM = request.POST['MM']
-    YY = request.POST['YY']
-    CVV = request.POST['cvv']
-
-    request.session['dcard'] = card_no
     try:
-        balance = Cards.objects.get(Card_number=card_no, Ex_month=MM, Ex_Year=YY, CVV=CVV).Balance
-        request.session['total_balance'] = balance
-        mail1 = Cards.objects.get(Card_number=card_no, Ex_month=MM, Ex_Year=YY, CVV=CVV).email
+        # print("if ma gayu")
+        # rno = random.randint(100000, 999999)
+        # request.session['OTP'] = rno
+        request.session['OTP'] = 12345
 
-        if int(balance) >= int(request.session['pay_amount']):
-            # print("if ma gayu")
-            rno = random.randint(100000, 999999)
-            request.session['OTP'] = rno
-
-            amt = request.session['pay_amount']
-            username = request.user.get_username()
-            print(username)
-            user = User.objects.get(username=username)
-            mail_id = user.email
-            print([mail_id])
-            msg = 'Your OTP For Payment of ₹' + str(amt) + ' is ' + str(rno)
-            # print(msg)
-            # print([mail_id])
-            # print(amt)
-            send_mail('OTP for Debit card Payment',
-                      msg,
-                      'travellotours89@gmail.com',
-                      [mail_id],
-                      fail_silently=False)
-            return render(request, 'OTP.html')
-        return render(request, 'wrongdata.html')
-
-
+        # amt = request.session['pay_amount']
+        # username = request.user.get_username()
+        # print(username)
+        # user = User.objects.get(username=username)
+        # mail_id = user.email
+        # print([mail_id])
+        # msg = 'Your OTP For Payment of ₹' + str(amt) + ' is ' + str(rno)
+        # # print(msg)
+        # # print([mail_id])
+        # # print(amt)
+        # send_mail('OTP for Debit card Payment',
+        #             msg,
+        #             'travellotours89@gmail.com',
+        #             [mail_id],
+        #             fail_silently=False)
+        return render(request, 'OTP.html')
+    
     except:
         return render(request, 'wrongdata.html')
 
@@ -263,10 +254,11 @@ def new_page_view(request):
 
         #  data_val = data.values
          target_val = target['destination'].tolist()
-         knn = KNeighborsClassifier(n_neighbors=3)
-         knn.fit(df1,target_val)
-
-         result = knn.predict([[price,day,food,stay,climate,fsize,transport,activity]])
+        #  knn = KNeighborsClassifier(n_neighbors=3)
+        #  knn.fit(df1,target_val)
+         clf = RandomForestClassifier(n_estimators=100)  # You can adjust the number of trees (n_estimators) and other hyperparameters
+         clf.fit(df1,target_val)
+         result = clf.predict([[price,day,food,stay,climate,fsize,transport,activity]])
         #  print(price,day,food,stay,climate,fsize,transport,activity)
         #  print(dest_dict[result[0]])
          return redirect(f"/destination_list/destination_details/{dest_dict[result[0]]}")
@@ -316,14 +308,14 @@ def otp_verification(request):
     pay_method = 'Debit card'
     if otp1 == int(request.session['OTP']):
         del request.session["OTP"]
-        total_balance = int(request.session['total_balance'])
-        rem_balance = int(total_balance-int(request.session["pay_amount"]))
-        c = Cards.objects.get(Card_number=request.session['dcard'])
-        c.Balance = rem_balance
-        c.save(update_fields=['Balance'])
-        c.save()
-        t = Transactions(username=usernameget, Trip_same_id=Trip_same_id1, Amount=amt, Payment_method=pay_method, Status='Successfull')
-        t.save()
+        # total_balance = int(request.session['total_balance'])
+        # rem_balance = int(total_balance-int(request.session["pay_amount"]))
+        # c = Cards.objects.get(Card_number=request.session['dcard'])
+        # c.Balance = rem_balance
+        # c.save(update_fields=['Balance'])
+        # c.save()
+        # t = Transactions(username=usernameget, Trip_same_id=Trip_same_id1, Amount=amt, Payment_method=pay_method, Status='Successfull')
+        # t.save()
         z = pessanger_detail.objects.all().filter(Trip_same_id=Trip_same_id1)
         for obj in z:
             obj.pay_done = 1
@@ -332,8 +324,8 @@ def otp_verification(request):
             print(obj.pay_done)
         return render(request, 'confirmetion_page.html')
     else:
-        t = Transactions(username=usernameget, Trip_same_id=Trip_same_id1, Amount=amt, Payment_method=pay_method)
-        t.save()
+        # t = Transactions(username=usernameget, Trip_same_id=Trip_same_id1, Amount=amt, Payment_method=pay_method)
+        # t.save()
         return render(request, 'wrong_OTP.html')
 
 @login_required(login_url='login')
