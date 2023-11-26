@@ -23,6 +23,17 @@ from django.contrib.auth.models import User
 import pandas as pd
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
+from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404
+from django.shortcuts import render, get_object_or_404
+from .models import Destination
+from .forms import CountryForm 
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Detailed_desc
+from .forms import PlacesForm
+
+
+
 
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -73,12 +84,35 @@ def register(request):
     else:
         return render(request, 'register.html')
 
+def adminbooking(request):
+    person = pessanger_detail.objects.all()
+    return render(request, 'admin_booking.html',{"person":person})
+
+
+def adminviewuser(request):
+    users = User.objects.all()
+    return render(request, 'admin_viewusers.html', {'users': users})
+
+
+def admin_destination(request):
+    travello_destination = Destination.objects.all()
+    travello_detailed_desc = Detailed_desc.objects.all()
+
+    context = {
+        'travello_destination': travello_destination,
+        'travello_detailed_desc': travello_detailed_desc,
+    }
+
+    return render(request, 'admin_destination.html', context)
+
+
+
 def login(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
-        if username == '7894561230' and password == 'ADMIN':
-            return render(request, 'admin.html')
+        if username == '7894561230' and password == 'admin':
+            return render(request, 'admin_home.html')
         
         user = auth.authenticate(username=username, password=password)
         if user is not None:
@@ -87,8 +121,6 @@ def login(request):
             email = request.user.email
             print(email)
             content = 'Hello ' + request.user.first_name + ' ' + request.user.last_name + '\n' + 'You are logged in in our site.keep connected and keep travelling.'
-            # send_mail('Alert for Login', content
-            #           , 'travellotours89@gmail.com', [email], fail_silently=True)
             dests = Destination.objects.all()
             return render(request, 'index.html',{'dests':dests})
         else:
@@ -138,6 +170,7 @@ class KeyValueForm(forms.Form):
     last_name = forms.CharField()
     age = forms.IntegerField()
 def pessanger_detail_def(request, city_name):
+    print ("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAss")
     KeyValueFormSet = formset_factory(KeyValueForm, extra=1)
     if request.method == 'POST':
         formset = KeyValueFormSet(request.POST)
@@ -146,7 +179,7 @@ def pessanger_detail_def(request, city_name):
             date1 = datetime.now().date()
             if temp_date < date1:
                 return redirect('index')
-            obj = pessanger_detail.objects.get(Trip_id=3)
+            obj = pessanger_detail.objects.get(Trip_id=17)
             pipo_id = obj.Trip_same_id
             #pipo_id =4
             request.session['Trip_same_id'] = pipo_id
@@ -250,7 +283,8 @@ def new_page_view(request):
          df1['transport'] = df1['transport'].astype(int)
          df1['activity'] = df1['activity'].astype(int)
 
-         dest_dict={"0":"Rome","1":"Venice","2":"Florence","3":"Pisa","4":"Dubai","5":"Burj Khalifa","6":"New York","7":"Isaland","8":"Switzerland","9":"United Kingdom","10":"Indonesia"}
+         dest_dict = {0: "Rome", 1: "Venice", 2: "Florence", 3: "Pisa", 4: "The Dubai Mall", 5: "Burj Khalifa", 6: "Dubai Marina", 7: "Kite Beach by Meraas", 8: "New York", 9: "Las Vegas", 10: "Isaland", 11: "Lord Howe Island", 12: "Global Village", 13: "Ski Dubai", 14: "Bali", 15: "Paris", 16: "Versailles", 17: "Yogyakarta", 18: "London", 19: "Berlin", 20: "Taj Mahal", 21: "Jaipur City Palace", 22: "Amalfi Coast", 23: "Nice", 24: "Lyon", 25: "Bordeaux", 26: "Lombok", 27: "Jakarta", 28: "Raja Ampat Islands", 29: "Oxford", 30: "Bath", 31: "Cambridge", 32: "Liverpool", 33: "York", 34: "Brighton", 35: "Manchester", 36: "Munich", 37: "Hamburg", 38: "Cologne", 39: "Heidelberg", 40: "Udaipur", 41: "Varanasi", 42: "Kerala Backwaters", 43: "Strasbourg", 44: "Annecy", 45: "Colmar", 46: "Avignon", 47: "Lille"}
+
 
         #  data_val = data.values
          target_val = target['destination'].tolist()
@@ -332,3 +366,70 @@ def otp_verification(request):
 def data_fetch(request):
     username = request.user.get_username()
     person = pessanger_detail.objects.all().filter(username=username)
+
+
+
+def admin_home(request):
+    return render(request, 'admin_home.html')
+
+
+
+def delete_booking(request, trip_id):
+    if request.method == 'POST':
+        booking = get_object_or_404(pessanger_detail, Trip_id=trip_id)
+        booking.delete()
+        return redirect('adminbooking')  
+    else:
+        pass
+
+
+def delete_user(request, user_id):
+    if request.method == 'POST':
+        user = User.objects.get(pk=user_id)
+        user.delete()
+    return redirect('admin_viewusers')
+
+
+
+def delete_country(request, country_id):
+    if request.method == 'POST':
+        country = Destination.objects.get(id=country_id)
+        country.delete()  
+        return redirect('admin_destination')
+    
+
+
+def delete_detailed_desc(request, detailed_desc_id):
+    if request.method == 'POST':
+        detailed_desc = Detailed_desc.objects.get(dest_id=detailed_desc_id)
+        detailed_desc.delete()
+    return redirect('admin_destination')
+
+
+
+def edit_country(request, destination_id):
+    destination = get_object_or_404(Destination, id=destination_id)
+    if request.method == 'POST':
+        form = CountryForm(request.POST, instance=destination)
+        if form.is_valid():
+            form.save()
+            # Redirect to some URL after successful edit
+            return redirect('admin_destination')
+    else:
+        form = CountryForm(instance=destination)
+    
+    return render(request, 'edit_country.html', {'form': form})
+
+
+
+def edit_places(request, detailed_desc_id):
+    detailed_desc = get_object_or_404(Detailed_desc, dest_id=detailed_desc_id)
+    if request.method == 'POST':
+        form = PlacesForm(request.POST, request.FILES, instance=detailed_desc)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_destination')  
+    else:
+        form = PlacesForm(instance=detailed_desc)
+    
+    return render(request, 'edit_places.html', {'form': form})

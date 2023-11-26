@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Additional styles for navbar */
+        .navbar {
+            background-color: #fff;
+            padding: 15px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        .logo img {
+            margin-right: 10px;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+        .nav-links a {
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 16px;
+            color: #000;
+        }
+        .nav-links a:hover {
+            text-decoration: none;
+        }
+        .logout {
+            background-color: #ff0000;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Additional styles for the delete button */
+        .delete-btn {
+            background-color: #ff0000;
+            color: #fff;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        /* Additional table styles */
+        table {
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">
+            <a href="{% url 'admin_home' %}"> 
+                <img src="/static/img/logo.png" alt="Home">
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="{% url 'admin_home' %}">Home</a>
+            <a href="{% url 'admin_destination' %}">Destination</a>
+            <a href="{% url 'admin_viewusers' %}">Users</a>
+            <a href="{% url 'adminbooking' %}">Bookings</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+
+    <!-- Admin content: Booking Table -->
+    <table border="1" style="border-collapse: collapse;" align="center">
+        <tr>
+            <!-- Table headers -->
+            <th>Trip_id</th>
+            <th>Trip_same_id</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Age</th>
+            <th>Trip Date</th>
+            <th>Payment</th>
+            <th>Username</th>
+            <th>City</th>
+            <th>Pay Done</th>
+            <th>Delete</th> 
+        </tr>
+
+        {% for per in person %}
+        <tr>
+            <!-- Table data -->
+            <td>{{per.Trip_id}}</td>
+            <td>{{per.Trip_same_id}}</td>
+            <td>{{per.first_name}}</td>
+            <td>{{per.last_name}}</td>
+            <td>{{per.age}}</td>
+            <td>{{per.payment}}</td>
+            <td>{{per.Trip_date}}</td>
+            <td>{{per.username}}</td>
+            <td>{{per.city}}</td>
+            <td>{{per.pay_done}}</td>
+            <td>
+                <form method="post" action="{% url 'delete_booking' per.Trip_id %}">
+                    {% csrf_token %}
+                    <button class="delete-btn" type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

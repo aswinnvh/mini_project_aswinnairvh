@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Edit Place</title>
+    <style>
+        /* General Styles */
+        body {
+            background: linear-gradient(to bottom, #3498db, #dc143c, #8a2be2);
+            /* Gradient background with blue, crimson, and violet */
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #fff;
+            /* White text color on the gradient background */
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(to right, #6a6464, #6610f2);
+            /* Gradient for h1 */
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Form Styles */
+        form {
+            background-color: #f0f0f0;
+            /* Light grey form background color */
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 10px;
+            color: #0078d4;
+            /* Blueish label text color */
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        input[type="submit"] {
+            background-color: #0078d4;
+            /* Blueish submit button background color */
+            color: #fff;
+            /* White text color */
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Select Dropdown Styles */
+        select {
+            background-color: #fff;
+            /* White dropdown background color */
+            color: #000;
+            /* Black dropdown text color */
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Edit Place Details</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }} 
+        <button type="submit">Update</button>
+    </form>
+</body>
+</html>
